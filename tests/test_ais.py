@@ -13,15 +13,14 @@ from AIS import AIS, Signature
 class TestAIS(unittest.TestCase):
 
     def test_constructor(self):
-        ais = AIS(customer='mike', key_static='the_secret')
-
-        self.assertTrue(ais)
-        self.assertEqual('mike', ais.customer)
-        self.assertEqual('the_secret', ais.key_static)
+        self.assertTrue(self.instance)
+        self.assertEqual('mike', self.instance.customer)
+        self.assertEqual('the_secret', self.instance.key_static)
 
     def test_sign_filename_returns_signature(self):
-        ais = AIS(customer='mike', key_static='the_secret')
-
-        result = ais.sign(filename='one.txt')
+        result = self.instance.sign(filename='one.txt')
 
         self.assertIsInstance(result, Signature)
+
+    def setUp(self):
+        self.instance = AIS(customer='mike', key_static='the_secret')
