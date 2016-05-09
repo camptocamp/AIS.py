@@ -9,4 +9,6 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 
 class AIS():
-    pass
+    def __init__(self, customer, key_static):
+        self.customer = customer
+        self.key_static = key_static

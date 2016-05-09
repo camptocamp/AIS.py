@@ -13,5 +13,8 @@ from AIS import AIS
 class TestAIS(unittest.TestCase):
 
     def test_constructor(self):
-        ais = AIS()
+        ais = AIS(customer='mike', key_static='the_secret')
+
         self.assertTrue(ais)
+        self.assertEqual('mike', ais.customer)
+        self.assertEqual('the_secret', ais.key_static)
