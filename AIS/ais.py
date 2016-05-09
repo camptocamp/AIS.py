@@ -12,3 +12,10 @@ class AIS():
     def __init__(self, customer, key_static):
         self.customer = customer
         self.key_static = key_static
+
+    def sign(self, filename):
+        return Signature()
+
+
+class Signature():
+    pass
