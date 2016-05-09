@@ -6,8 +6,12 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+import unittest
+from AIS import AIS
 
-from .api import login
-from .ais import AIS
 
-__all__ = ('login', 'AIS')
+class TestAIS(unittest.TestCase):
+
+    def test_constructor(self):
+        ais = AIS()
+        self.assertTrue(ais)
