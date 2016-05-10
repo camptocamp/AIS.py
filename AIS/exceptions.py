@@ -16,6 +16,10 @@ class AuthenticationFailed(AISError):
     pass
 
 
+class UnknownAISError(AISError):
+    pass
+
+
 minor_to_exception = {
     'http://ais.swisscom.ch/1.0/resultminor/AuthenticationFailed':
     AuthenticationFailed,
@@ -25,5 +29,5 @@ minor_to_exception = {
 def error_for(response):
     result = response.json()['SignResponse']['Result']
 
-    Exc = minor_to_exception[result['ResultMinor']]
-    return Exc
+    Exc = minor_to_exception.get(result['ResultMinor'], UnknownAISError)
+    return Exc(response)

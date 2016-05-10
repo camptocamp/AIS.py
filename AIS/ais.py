@@ -6,6 +6,10 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+
+import base64
+import hashlib
+import sys
 import uuid
 
 import requests
@@ -14,17 +18,33 @@ from . import exceptions
 
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
 
+PY3 = sys.version_info[0] == 3
+
 
 class AIS():
-    def __init__(self, customer, key_static):
+    def __init__(self, customer, key_static, cert_file, cert_key):
         self.customer = customer
         self.key_static = key_static
+        self.cert_file = cert_file
+        self.cert_key = cert_key
 
     def _request_id(self):
         return uuid.uuid4().hex
 
+    def _hash(self, filename):
+        """Returns str.
+
+        """
+        with open(filename, 'rb') as fp:
+            contents = fp.read()
+        h = hashlib.new('sha256', contents)
+        result = base64.b64encode(h.digest())
+        if PY3:
+            result = result.decode('ascii')
+        return result
+
     def sign(self, filename):
-        file_hash = ""
+        file_hash = self._hash(filename)
 
         payload = {
             "SignRequest": {
@@ -32,12 +52,11 @@ class AIS():
                 "@Profile": "http://ais.swisscom.ch/1.0",
                 "OptionalInputs": {
                     "ClaimedIdentity": {
-                        "Name": self.customer,
+                        "Name": ':'.join((self.customer, self.key_static)),
                     },
-                    "SignatureType": "urn:ietf:rfc:3161",
+                    "SignatureType": "urn:ietf:rfc:3369",
+                    "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
                     "sc.AddRevocationInformation": {"@Type": "BOTH"},
-                    "AdditionalProfile":
-                    "urn:oasis:names:tc:dss:1.0:profiles:timestamping",
                 },
                 "InputDocuments": {
                     "DocumentHash": {
@@ -55,8 +74,10 @@ class AIS():
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8',
         }
-        response = requests.post(url, json=payload, headers=headers)
-        result = response.json()['SignResponse']['Result']
+        cert = (self.cert_file, self.cert_key)
+        response = requests.post(url, json=payload, headers=headers, cert=cert)
+        sign_response = response.json()['SignResponse']
+        result = sign_response['Result']
 
         if 'Error' in result['ResultMajor']:
             raise exceptions.error_for(response)
