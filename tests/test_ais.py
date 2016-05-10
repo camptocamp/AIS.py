@@ -29,6 +29,7 @@ class TestAIS(unittest.TestCase):
         result = self.instance.sign(filename=fixture_path('one.pdf'))
 
         self.assertIsInstance(result, Signature)
+        self.assertIsInstance(result.contents, bytes)
 
     def test_wrong_customer_auth_error(self):
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",

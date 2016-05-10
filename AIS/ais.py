@@ -82,8 +82,12 @@ class AIS():
         if 'Error' in result['ResultMajor']:
             raise exceptions.error_for(response)
 
-        return Signature()
+        signature = Signature(base64.b64decode(
+            sign_response['SignatureObject']['Base64Signature']['$']
+        ))
+        return signature
 
 
 class Signature():
-    pass
+    def __init__(self, contents):
+        self.contents = contents
