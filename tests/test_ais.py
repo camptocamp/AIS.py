@@ -6,21 +6,27 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+from os import environ
 import unittest
-from AIS import AIS, Signature
+
+from AIS import AIS, AuthenticationFailed
 
 
 class TestAIS(unittest.TestCase):
 
     def test_constructor(self):
-        self.assertTrue(self.instance)
-        self.assertEqual('mike', self.instance.customer)
-        self.assertEqual('the_secret', self.instance.key_static)
+        alice_instance = AIS(customer='alice', key_static='alice_secret')
+        self.assertEqual('alice', alice_instance.customer)
+        self.assertEqual('alice_secret', alice_instance.key_static)
 
-    def test_sign_filename_returns_signature(self):
-        result = self.instance.sign(filename='one.txt')
+    def test_wrong_customer_auth_error(self):
+        bad_instance = AIS(customer="wrong_name", key_static="wrong_key")
 
-        self.assertIsInstance(result, Signature)
+        with self.assertRaises(AuthenticationFailed):
+            bad_instance.sign(filename='one.txt')
 
     def setUp(self):
-        self.instance = AIS(customer='mike', key_static='the_secret')
+        self.customer = environ.get('AIS_CUSTOMER', 'mike')
+        self.key_static = environ.get('AIS_KEY_STATIC', 'the_secret')
+
+        self.instance = AIS(customer=self.customer, key_static=self.key_static)
