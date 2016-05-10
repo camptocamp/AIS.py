@@ -30,4 +30,4 @@ def error_for(response):
     result = response.json()['SignResponse']['Result']
 
     Exc = minor_to_exception.get(result['ResultMinor'], UnknownAISError)
-    return Exc(response)
+    return Exc(result)

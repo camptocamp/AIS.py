@@ -6,11 +6,35 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
+import json
 from os import environ
 from os.path import dirname, join
 import unittest
 
+from vcr import VCR
+
 from AIS import AIS, Signature, AuthenticationFailed
+
+
+def before_record_callback(request):
+    """Replace confidential information in the recorded cassettes.
+
+    - customer:key are replaced with 'X:Y'
+
+    """
+    payload = json.loads(request.body)
+    payload['SignRequest']['OptionalInputs']['ClaimedIdentity']['Name'] = 'X:Y'
+    request.body = json.dumps(payload)
+    return request
+
+
+my_vcr = VCR(
+    serializer='json',
+    record_mode='once',
+    cassette_library_dir=join(dirname(__file__), 'cassettes'),
+    path_transformer=VCR.ensure_suffix('.json'),
+    before_record=before_record_callback
+)
 
 
 def fixture_path(filename):
@@ -26,8 +50,10 @@ class TestAIS(unittest.TestCase):
         self.assertEqual('alice_secret', alice_instance.key_static)
 
     def test_sign_filename_returns_signature(self):
-        result = self.instance.sign(filename=fixture_path('one.pdf'))
+        with my_vcr.use_cassette('sign_one') as cassette:
+            result = self.instance.sign(filename=fixture_path('one.pdf'))
 
+        self.assertEqual(1, len(cassette))
         self.assertIsInstance(result, Signature)
         self.assertIsInstance(result.contents, bytes)
 
@@ -37,7 +63,8 @@ class TestAIS(unittest.TestCase):
                            cert_key=self.cert_key)
 
         with self.assertRaises(AuthenticationFailed):
-            bad_instance.sign(filename=fixture_path('one.pdf'))
+            with my_vcr.use_cassette('wrong_customer'):
+                bad_instance.sign(filename=fixture_path('one.pdf'))
 
     def setUp(self):
         self.customer = environ.get('AIS_CUSTOMER', 'bonnie')
