@@ -22,7 +22,10 @@ PY3 = sys.version_info[0] == 3
 
 
 class AIS():
+    """Client object holding connection information to the AIS service."""
+
     def __init__(self, customer, key_static, cert_file, cert_key):
+        """Initialize an AIS client with authentication information."""
         self.customer = customer
         self.key_static = key_static
         self.cert_file = cert_file
@@ -32,9 +35,7 @@ class AIS():
         return uuid.uuid4().hex
 
     def _hash(self, filename):
-        """Returns str.
-
-        """
+        """Return the hash of a file as a str."""
         with open(filename, 'rb') as fp:
             contents = fp.read()
         h = hashlib.new('sha256', contents)
@@ -44,6 +45,7 @@ class AIS():
         return result
 
     def sign(self, filename):
+        """Sign the given file, return a Signature instance."""
         file_hash = self._hash(filename)
 
         payload = {
@@ -89,5 +91,8 @@ class AIS():
 
 
 class Signature():
+    """A cryptographic signature returned from the AIS webservice."""
+
     def __init__(self, contents):
+        """Build a Signature."""
         self.contents = contents
