@@ -1,6 +1,9 @@
 AIS.py
 ======
 
+.. image:: https://travis-ci.org/camptocamp/AIS.py.svg?branch=master
+    :target: https://travis-ci.org/camptocamp/AIS.py
+
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
 This is **work in progress**! Nothing useful for now.
