@@ -31,7 +31,7 @@ setup(
         'Development Status :: 1 - Planning',
         'License :: OSI Approved',
         'License :: OSI Approved :: '
-        'GNU Affero General Public License v3 or later (AGPLv3+)'
+        'GNU Affero General Public License v3 or later (AGPLv3+)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
