@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
 from codecs import open
+import re
+from setuptools import setup
 
-version = '0.1'
+with open('AIS/__init__.py', 'r') as fd:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        fd.read(), re.MULTILINE).group(1)
+
+if not version:
+    raise RuntimeError('Cannot find version information')
 
 with open('README.rst', 'r', 'utf-8') as f:
     readme = f.read()
