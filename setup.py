@@ -26,7 +26,8 @@ setup(
     author_email="info@camptocamp.com",
     url="www.camptocamp.com",
     packages=['AIS'],
-    install_requires=["requests >= 2.0"],
+    install_requires=["requests >= 2.0",
+                      "PyPDF2"],
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved',
