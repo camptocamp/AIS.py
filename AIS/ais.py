@@ -47,39 +47,6 @@ class AIS():
             result = result.decode('ascii')
         return result
 
-    def pdf_digest(self, filename):
-        reader = PyPDF2.PdfFileReader(filename)
-        sig_obj = None
-
-        for generation, idnums in reader.xref.items():
-            for idnum in idnums:
-                if idnum == 0:
-                    continue
-                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
-                                                        reader).getObject()
-                if (
-                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
-                    pdf_obj.get('/Type') == '/Sig'
-                ):
-                    sig_obj = pdf_obj
-                    continue
-
-        if sig_obj is None:
-            raise exceptions.MissingPreparedSignature
-
-        self.byte_range = sig_obj['/ByteRange']
-
-        h = hashlib.sha256()
-        with open(filename, 'rb') as fp:
-            for start, length in (self.byte_range[:2], self.byte_range[2:]):
-                fp.seek(start)
-                h.update(fp.read(length))
-
-        result = base64.b64encode(h.digest())
-        if PY3:
-            result = result.decode('ascii')
-        return result
-
     def sign(self, filename):
         """Sign the given file, return a Signature instance."""
         file_hash = self._hash(filename)
@@ -126,9 +93,15 @@ class AIS():
 
         return signature
 
-    def sign_pdf(self, filename):
+    def sign_batch(self.pdfs):
+        # prepare pdfs in one batch
+        # payload in batch
+        import pdb; pdb.set_trace()  # XXX BREAKPOINT
+
+        pass
+
+    def sign_one_pdf(self, pdf):
         """Sign the given pdf file."""
-        file_hash = self.pdf_digest(filename)
 
         payload = {
             "SignRequest": {
@@ -148,7 +121,7 @@ class AIS():
                             "@Algorithm":
                             "http://www.w3.org/2001/04/xmlenc#sha256"
                         },
-                        "dsig.DigestValue": file_hash
+                        "dsig.DigestValue": pdf.digest()
                     },
                 }
             }
@@ -169,9 +142,9 @@ class AIS():
         signature = Signature(base64.b64decode(
             sign_response['SignatureObject']['Base64Signature']['$']
         ))
-        with open("out.pdf", "rb+") as fp:
-            fp.seek(self.byte_range[1] + 1)
-            fp.write(signature.contents.encode('hex'))
+        # with open("out.pdf", "rb+") as fp:
+        #     fp.seek(self.byte_range[1] + 1)
+        #     fp.write(signature.contents.encode('hex'))
 
         return signature
 
@@ -182,3 +155,44 @@ class Signature():
     def __init__(self, contents):
         """Build a Signature."""
         self.contents = contents
+
+
+class PDF():
+    def __init__(self, in_filename):
+        self.in_filename = in_filename
+        self.prepared_filename = self.in_filename
+
+    def digest(self):
+        reader = PyPDF2.PdfFileReader(self.prepared_filename)
+        sig_obj = None
+
+        for generation, idnums in reader.xref.items():
+            for idnum in idnums:
+                if idnum == 0:
+                    break
+                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
+                                                        reader).getObject()
+                if (
+                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
+                    pdf_obj.get('/Type') == '/Sig'
+                ):
+                    sig_obj = pdf_obj
+                    break
+
+        if sig_obj is None:
+            raise exceptions.MissingPreparedSignature
+
+        self.byte_range = sig_obj['/ByteRange']
+
+        h = hashlib.sha256()
+        with open(self.prepared_filename, 'rb') as fp:
+            for start, length in (self.byte_range[:2], self.byte_range[2:]):
+                fp.seek(start)
+                h.update(fp.read(length))
+
+        result = base64.b64encode(h.digest())
+
+        if PY3:
+            result = result.decode('ascii')
+
+        return result

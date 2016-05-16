@@ -13,7 +13,7 @@ import unittest
 
 from vcr import VCR
 
-from AIS import AIS, Signature, AuthenticationFailed
+from AIS import AIS, Signature, AuthenticationFailed, PDF
 
 
 def before_record_callback(request):
@@ -66,23 +66,23 @@ class TestAIS(unittest.TestCase):
         self.assertIsInstance(result, Signature)
         self.assertIsInstance(result.contents, bytes)
 
-    def test_get_pdf_hash(self):
-        actual_digest = self.instance.pdf_digest(
-            filename=fixture_path('prepared.pdf')
-        )
-
-        with open(fixture_path('expected_digest')) as fp:
-            self.assertEqual(fp.read(), actual_digest)
-
     def test_sign_prepared_pdf(self):
-        """Test signature of a single file.
+        """Test signature of a single prepared pdf.
 
         Given I am authenticated
-        When a sign an existing file
+        When a sign an existing unprepared
         Then I receive a signature
         """
         with my_vcr.use_cassette('sign_prepared_pdf'):
-            self.instance.sign_pdf(filename=fixture_path('prepared.pdf'))
+            self.instance.sign_one_pdf(PDF(fixture_path('prepared.pdf')))
+
+    def test_sign_prepared_batch(self):
+        """Test signature of a single unprepared pdf."""
+        filenames = ["prep1.pdf", "prep2.pdf", "prep3.pdf"]
+        with my_vcr.use_cassette('sign_prepared_batch'):
+            self.instance.sign_batch([
+                PDF(fixture_path(f)) for f in filenames
+            ])
 
     def test_wrong_customer_auth_error(self):
         """Test an AuthenticationFailed."""
@@ -114,3 +114,11 @@ class TestAIS(unittest.TestCase):
 
         self.instance = AIS(self.customer, self.key_static,
                             self.cert_file, self.cert_key)
+
+
+class TestPDF(unittest.TestCase):
+    def test_get_pdf_hash(self):
+        pdf = PDF(fixture_path('prepared.pdf'))
+
+        with open(fixture_path('expected_digest')) as fp:
+            self.assertEqual(fp.read(), pdf.digest())

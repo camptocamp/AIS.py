@@ -7,9 +7,10 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 """
 from .api import login
-from .ais import AIS, Signature
+from .ais import AIS, Signature, PDF
 from .exceptions import AISError, AuthenticationFailed
 
-__all__ = ('login', 'AIS', 'Signature', 'AISError', 'AuthenticationFailed')
+__all__ = ('login', 'AIS', 'PDF', 'Signature', 'AISError',
+           'AuthenticationFailed')
 
 __version__ = '0.1.0a1'
