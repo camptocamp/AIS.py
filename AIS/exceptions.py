@@ -30,6 +30,11 @@ class UnknownAISError(AISError):
     pass
 
 
+class MissingPreparedSignature(AISError):
+    """The PDF file needs to be prepared with an empty signature."""
+    pass
+
+
 minor_to_exception = {
     'http://ais.swisscom.ch/1.0/resultminor/AuthenticationFailed':
     AuthenticationFailed,

@@ -13,6 +13,7 @@ import sys
 import uuid
 
 import requests
+import PyPDF2
 
 from . import exceptions
 
@@ -43,6 +44,40 @@ class AIS():
         if PY3:
             result = result.decode('ascii')
         return result
+
+    def pdf_digest(self, filename):
+        reader = PyPDF2.PdfFileReader(filename)
+        sig_obj = None
+
+        for generation, idnums in reader.xref.items():
+            for idnum in idnums:
+                if idnum == 0:
+                    continue
+                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
+                                                        reader).getObject()
+                if (
+                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
+                    pdf_obj.get('/Type') == '/Sig'
+                ):
+                    sig_obj = pdf_obj
+                    continue
+
+        if sig_obj is None:
+            raise exceptions.MissingPreparedSignature
+
+        byte_range = sig_obj['/ByteRange']
+
+        with open(filename, 'rb') as fp:
+            h = hashlib.sha256()
+            fp.seek(byte_range[0])
+            read1 = fp.read(byte_range[1])
+            h.update(read1)
+            fp.seek(byte_range[2])
+            read2 = fp.read(byte_range[3])
+            h.update(read2)
+            digest = h.digest()
+
+        return digest
 
     def sign(self, filename):
         """Sign the given file, return a Signature instance."""
