@@ -32,6 +32,8 @@ class AIS():
         self.cert_file = cert_file
         self.cert_key = cert_key
 
+        self.byte_range = None
+
     def _request_id(self):
         return uuid.uuid4().hex
 
@@ -65,15 +67,18 @@ class AIS():
         if sig_obj is None:
             raise exceptions.MissingPreparedSignature
 
-        byte_range = sig_obj['/ByteRange']
+        self.byte_range = sig_obj['/ByteRange']
 
         h = hashlib.sha256()
         with open(filename, 'rb') as fp:
-            for start, length in (byte_range[:2], byte_range[2:]):
+            for start, length in (self.byte_range[:2], self.byte_range[2:]):
                 fp.seek(start)
                 h.update(fp.read(length))
 
-        return h.digest()
+        result = base64.b64encode(h.digest())
+        if PY3:
+            result = result.decode('ascii')
+        return result
 
     def sign(self, filename):
         """Sign the given file, return a Signature instance."""
@@ -118,6 +123,56 @@ class AIS():
         signature = Signature(base64.b64decode(
             sign_response['SignatureObject']['Base64Signature']['$']
         ))
+
+        return signature
+
+    def sign_pdf(self, filename):
+        """Sign the given pdf file."""
+        file_hash = self.pdf_digest(filename)
+
+        payload = {
+            "SignRequest": {
+                "@RequestID": self._request_id(),
+                "@Profile": "http://ais.swisscom.ch/1.0",
+                "OptionalInputs": {
+                    "ClaimedIdentity": {
+                        "Name": ':'.join((self.customer, self.key_static)),
+                    },
+                    "SignatureType": "urn:ietf:rfc:3369",
+                    "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
+                    "sc.AddRevocationInformation": {"@Type": "BOTH"},
+                },
+                "InputDocuments": {
+                    "DocumentHash": {
+                        "dsig.DigestMethod": {
+                            "@Algorithm":
+                            "http://www.w3.org/2001/04/xmlenc#sha256"
+                        },
+                        "dsig.DigestValue": file_hash
+                    },
+                }
+            }
+        }
+
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8',
+        }
+        cert = (self.cert_file, self.cert_key)
+        response = requests.post(url, json=payload, headers=headers, cert=cert)
+        sign_response = response.json()['SignResponse']
+        result = sign_response['Result']
+
+        if 'Error' in result['ResultMajor']:
+            raise exceptions.error_for(response)
+
+        signature = Signature(base64.b64decode(
+            sign_response['SignatureObject']['Base64Signature']['$']
+        ))
+        with open("out.pdf", "rb+") as fp:
+            fp.seek(self.byte_range[1] + 1)
+            fp.write(signature.contents.encode('hex'))
+
         return signature
 
 

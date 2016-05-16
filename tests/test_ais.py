@@ -74,6 +74,15 @@ class TestAIS(unittest.TestCase):
         with open(fixture_path('expected_digest')) as fp:
             self.assertEqual(fp.read(), actual_digest)
 
+    def test_sign_pdf(self):
+        """Test signature of a single file.
+
+        Given I am authenticated
+        When a sign an existing file
+        Then I receive a signature
+        """
+        self.instance.sign_pdf(filename=fixture_path('prepared.pdf'))
+
     def test_wrong_customer_auth_error(self):
         """Test an AuthenticationFailed."""
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",
