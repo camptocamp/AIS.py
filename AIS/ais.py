@@ -67,17 +67,13 @@ class AIS():
 
         byte_range = sig_obj['/ByteRange']
 
+        h = hashlib.sha256()
         with open(filename, 'rb') as fp:
-            h = hashlib.sha256()
-            fp.seek(byte_range[0])
-            read1 = fp.read(byte_range[1])
-            h.update(read1)
-            fp.seek(byte_range[2])
-            read2 = fp.read(byte_range[3])
-            h.update(read2)
-            digest = h.digest()
+            for start, length in (byte_range[:2], byte_range[2:]):
+                fp.seek(start)
+                h.update(fp.read(length))
 
-        return digest
+        return h.digest()
 
     def sign(self, filename):
         """Sign the given file, return a Signature instance."""
