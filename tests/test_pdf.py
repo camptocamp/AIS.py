@@ -17,4 +17,10 @@ class TestPDF(BaseCase):
         pdf = PDF(fixture_path('prepared.pdf'))
 
         with open(fixture_path('expected_digest')) as fp:
-            self.assertEqual(fp.read(), pdf.digest())
+            self.assertEqual(fp.read().strip(), pdf.digest())
+
+    def test_prepare_then_get_digest(self):
+        pdf = PDF(fixture_path('one.pdf'))
+
+        pdf.prepare()
+        self.assertEqual(44, len(pdf.digest()))   # digest changes every time

@@ -9,8 +9,12 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import hashlib
+import shutil
+import subprocess
+import tempfile
 
 import PyPDF2
+from pkg_resources import resource_filename
 
 from . import exceptions
 from . import helpers
@@ -19,10 +23,23 @@ from . import helpers
 class PDF():
     def __init__(self, in_filename):
         self.in_filename = in_filename
-        self.prepared_filename = self.in_filename   # XXX
+        self.out_fp, self.out_filename = tempfile.mkstemp()
+        shutil.copy(self.in_filename, self.out_filename)
+
+    def prepare(self):
+        """Add an empty signature to self.out_filename."""
+        java_dir = resource_filename(__name__, 'empty_signer')
+
+        subprocess.check_call([
+            'java',
+            '-cp', '.:vendor/itextpdf-5.5.9.jar',
+            '-Duser.dir={}'.format(java_dir),
+            'EmptySigner',
+            self.out_filename,
+        ])
 
     def digest(self):
-        reader = PyPDF2.PdfFileReader(self.prepared_filename)
+        reader = PyPDF2.PdfFileReader(self.out_filename)
         sig_obj = None
 
         for generation, idnums in reader.xref.items():
@@ -44,7 +61,7 @@ class PDF():
         self.byte_range = sig_obj['/ByteRange']
 
         h = hashlib.sha256()
-        with open(self.prepared_filename, 'rb') as fp:
+        with open(self.out_filename, 'rb') as fp:
             for start, length in (self.byte_range[:2], self.byte_range[2:]):
                 fp.seek(start)
                 h.update(fp.read(length))
