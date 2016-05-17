@@ -9,11 +9,9 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import hashlib
-import sys
 import uuid
 
 import requests
-import PyPDF2
 
 from . import exceptions
 from . import helpers
@@ -92,16 +90,14 @@ class AIS():
 
         return signature
 
-    def sign_batch(self, pdfs):
+    def sign_batch(self, files):
+        """Sign a batch of files."""
         # prepare pdfs in one batch
         # payload in batch
-        import pdb; pdb.set_trace()  # XXX BREAKPOINT
-
         pass
 
     def sign_one_pdf(self, pdf):
         """Sign the given pdf file."""
-
         payload = {
             "SignRequest": {
                 "@RequestID": self._request_id(),
