@@ -46,8 +46,8 @@ class TestAIS(BaseCase):
     def test_sign_batch(self):
         pdfs = [PDF(fixture_path(filename))
                 for filename in ["one.pdf", "two.pdf", "three.pdf"]]
-        # with my_vcr.use_cassette('sign_prepared_batch'):
-        self.instance.sign_batch(pdfs)
+        with my_vcr.use_cassette('sign_batch'):
+            self.instance.sign_batch(pdfs)
         from pprint import pprint as pp
         pp([p.out_filename for p in pdfs])
 
