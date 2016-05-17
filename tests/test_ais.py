@@ -30,8 +30,18 @@ class TestAIS(BaseCase):
         self.assertIsInstance(result.contents, bytes)
 
     def test_sign_single_prepared_pdf(self):
+        pdf = PDF(fixture_path('prepared.pdf'), prepared=True)
         with my_vcr.use_cassette('sign_prepared_pdf'):
-            self.instance.sign_one_pdf(PDF(fixture_path('prepared.pdf')))
+            self.instance.sign_one_pdf(pdf)
+
+        # TODO find a way to check the signature programmatically
+        # Checked manually with Adobe Acrobat Reader DC for now
+
+    def test_sign_single_unprepared_pdf(self):
+        pdf = PDF(fixture_path('one.pdf'))
+        with my_vcr.use_cassette('sign_unprepared_pdf'):
+            self.instance.sign_one_pdf(pdf)
+        # TODO check the signature
 
     # def test_sign_prepared_batch(self):
     #     """Test signature of a single unprepared pdf."""

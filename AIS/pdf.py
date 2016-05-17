@@ -21,22 +21,26 @@ from . import helpers
 
 
 class PDF():
-    def __init__(self, in_filename):
+    def __init__(self, in_filename, prepared=False):
         self.in_filename = in_filename
-        self.out_fp, self.out_filename = tempfile.mkstemp()
+        self.out_fp, self.out_filename = tempfile.mkstemp(suffix=".pdf")
         shutil.copy(self.in_filename, self.out_filename)
+        self.prepared = prepared
 
     def prepare(self):
         """Add an empty signature to self.out_filename."""
-        java_dir = resource_filename(__name__, 'empty_signer')
+        if not self.prepared:
+            java_dir = resource_filename(__name__, 'empty_signer')
 
-        subprocess.check_call([
-            'java',
-            '-cp', '.:vendor/itextpdf-5.5.9.jar',
-            '-Duser.dir={}'.format(java_dir),
-            'EmptySigner',
-            self.out_filename,
-        ])
+            subprocess.check_call([
+                'java',
+                '-cp', '.:vendor/itextpdf-5.5.9.jar',
+                '-Duser.dir={}'.format(java_dir),
+                'EmptySigner',
+                self.out_filename,
+            ])
+            self.prepared = True
+
 
     def digest(self):
         reader = PyPDF2.PdfFileReader(self.out_filename)

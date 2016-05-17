@@ -98,6 +98,8 @@ class AIS():
 
     def sign_one_pdf(self, pdf):
         """Sign the given pdf file."""
+        pdf.prepare()
+
         payload = {
             "SignRequest": {
                 "@RequestID": self._request_id(),
@@ -137,9 +139,9 @@ class AIS():
         signature = Signature(base64.b64decode(
             sign_response['SignatureObject']['Base64Signature']['$']
         ))
-        # with open("out.pdf", "rb+") as fp:
-        #     fp.seek(self.byte_range[1] + 1)
-        #     fp.write(signature.contents.encode('hex'))
+        with open(pdf.out_filename, "rb+") as fp:
+            fp.seek(pdf.byte_range[1] + 1)
+            fp.write(signature.contents.encode('hex'))
 
         return signature
 
