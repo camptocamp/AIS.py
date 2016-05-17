@@ -16,10 +16,9 @@ import requests
 import PyPDF2
 
 from . import exceptions
+from . import helpers
 
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
-
-PY3 = sys.version_info[0] == 3
 
 
 class AIS():
@@ -43,7 +42,7 @@ class AIS():
             contents = fp.read()
         h = hashlib.new('sha256', contents)
         result = base64.b64encode(h.digest())
-        if PY3:
+        if helpers.PY3:
             result = result.decode('ascii')
         return result
 
@@ -93,7 +92,7 @@ class AIS():
 
         return signature
 
-    def sign_batch(self.pdfs):
+    def sign_batch(self, pdfs):
         # prepare pdfs in one batch
         # payload in batch
         import pdb; pdb.set_trace()  # XXX BREAKPOINT
@@ -155,44 +154,3 @@ class Signature():
     def __init__(self, contents):
         """Build a Signature."""
         self.contents = contents
-
-
-class PDF():
-    def __init__(self, in_filename):
-        self.in_filename = in_filename
-        self.prepared_filename = self.in_filename
-
-    def digest(self):
-        reader = PyPDF2.PdfFileReader(self.prepared_filename)
-        sig_obj = None
-
-        for generation, idnums in reader.xref.items():
-            for idnum in idnums:
-                if idnum == 0:
-                    break
-                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
-                                                        reader).getObject()
-                if (
-                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
-                    pdf_obj.get('/Type') == '/Sig'
-                ):
-                    sig_obj = pdf_obj
-                    break
-
-        if sig_obj is None:
-            raise exceptions.MissingPreparedSignature
-
-        self.byte_range = sig_obj['/ByteRange']
-
-        h = hashlib.sha256()
-        with open(self.prepared_filename, 'rb') as fp:
-            for start, length in (self.byte_range[:2], self.byte_range[2:]):
-                fp.seek(start)
-                h.update(fp.read(length))
-
-        result = base64.b64encode(h.digest())
-
-        if PY3:
-            result = result.decode('ascii')
-
-        return result
