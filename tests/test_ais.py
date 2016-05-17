@@ -33,13 +33,13 @@ class TestAIS(BaseCase):
         with my_vcr.use_cassette('sign_prepared_pdf'):
             self.instance.sign_one_pdf(PDF(fixture_path('prepared.pdf')))
 
-    def test_sign_prepared_batch(self):
-        """Test signature of a single unprepared pdf."""
-        filenames = ["prep1.pdf", "prep2.pdf", "prep3.pdf"]
-        with my_vcr.use_cassette('sign_prepared_batch'):
-            self.instance.sign_batch([
-                PDF(fixture_path(f)) for f in filenames
-            ])
+    # def test_sign_prepared_batch(self):
+    #     """Test signature of a single unprepared pdf."""
+    #     filenames = ["prep1.pdf", "prep2.pdf", "prep3.pdf"]
+    #     with my_vcr.use_cassette('sign_prepared_batch'):
+    #         self.instance.sign_batch([
+    #             PDF(fixture_path(f)) for f in filenames
+    #         ])
 
     def test_wrong_customer_authentication_failed(self):
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",
