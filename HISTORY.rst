@@ -6,5 +6,5 @@ Release History
 0.1 (unreleased)
 ++++++++++++++++
 
-Initial release. Now it is possible to send a single file to the AIS and obtain
-a detached signature.
+Initial release. It is possible to start with a batch of pdf files that do not
+yet have a prepared signature, and sign them.
