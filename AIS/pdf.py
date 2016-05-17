@@ -27,20 +27,34 @@ class PDF():
         shutil.copy(self.in_filename, self.out_filename)
         self.prepared = prepared
 
+    @staticmethod
+    def _java_command():
+        java_dir = resource_filename(__name__, 'empty_signer')
+        return [
+            'java',
+            '-cp', '.:vendor/itextpdf-5.5.9.jar',
+            '-Duser.dir={}'.format(java_dir),
+            'EmptySigner',
+        ]
+
+    @classmethod
+    def prepare_batch(cls, pdfs):
+        """Add an empty signature to each of pdfs with only one java call.."""
+        pdfs_to_prepare = filter(lambda p: not p.prepared, pdfs)
+        subprocess.check_call(
+            cls._java_command() +
+            [pdf.out_filename for pdf in pdfs_to_prepare]
+        )
+        for pdf in pdfs_to_prepare:
+            pdf.prepared = True
+
     def prepare(self):
         """Add an empty signature to self.out_filename."""
         if not self.prepared:
-            java_dir = resource_filename(__name__, 'empty_signer')
-
-            subprocess.check_call([
-                'java',
-                '-cp', '.:vendor/itextpdf-5.5.9.jar',
-                '-Duser.dir={}'.format(java_dir),
-                'EmptySigner',
-                self.out_filename,
-            ])
+            subprocess.check_call(
+                self._java_command() + [self.out_filename],
+            )
             self.prepared = True
-
 
     def digest(self):
         reader = PyPDF2.PdfFileReader(self.out_filename)
