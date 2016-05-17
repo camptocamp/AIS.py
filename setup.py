@@ -28,6 +28,7 @@ setup(
     packages=['AIS'],
     install_requires=["requests >= 2.0",
                       "PyPDF2"],
+    include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved',

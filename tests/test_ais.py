@@ -6,59 +6,22 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 :license: AGPLv3, see README and LICENSE for more details
 
 """
-import json
 from os import environ
-from os.path import dirname, join
-import unittest
 
-from vcr import VCR
+from common import my_vcr, fixture_path, BaseCase
 
-from AIS import AIS, Signature, AuthenticationFailed
+from AIS import AIS, Signature, AuthenticationFailed, PDF
 
 
-def before_record_callback(request):
-    """Replace confidential information in the recorded cassettes.
+class TestAIS(BaseCase):
 
-    - customer:key are replaced with 'X:Y'
-
-    """
-    payload = json.loads(request.body)
-    payload['SignRequest']['OptionalInputs']['ClaimedIdentity']['Name'] = 'X:Y'
-    request.body = json.dumps(payload)
-    return request
-
-
-my_vcr = VCR(
-    serializer='json',
-    record_mode='once',
-    cassette_library_dir=join(dirname(__file__), 'cassettes'),
-    path_transformer=VCR.ensure_suffix('.json'),
-    before_record=before_record_callback
-)
-
-
-def fixture_path(filename):
-    """Build the full path of a fixture file."""
-    return join(dirname(__file__), 'fixtures', filename)
-
-
-class TestAIS(unittest.TestCase):
-    """Generic tests of the AIS client."""
-
-    def test_constructor(self):
-        """The constructor builds a client instance."""
+    def test_constructor_builds_instance(self):
         alice_instance = AIS(customer='alice', key_static='alice_secret',
                              cert_file='alice.crt', cert_key='alice.key')
         self.assertEqual('alice', alice_instance.customer)
         self.assertEqual('alice_secret', alice_instance.key_static)
 
     def test_sign_filename_returns_signature(self):
-        """Test signature of a single file.
-
-        Given I am authenticated
-        When a sign an existing file
-        Then I receive a signature
-        """
         with my_vcr.use_cassette('sign_one') as cassette:
             result = self.instance.sign(filename=fixture_path('one.pdf'))
 
@@ -66,26 +29,31 @@ class TestAIS(unittest.TestCase):
         self.assertIsInstance(result, Signature)
         self.assertIsInstance(result.contents, bytes)
 
-    def test_get_pdf_hash(self):
-        actual_digest = self.instance.pdf_digest(
-            filename=fixture_path('prepared.pdf')
-        )
-
-        with open(fixture_path('expected_digest')) as fp:
-            self.assertEqual(fp.read(), actual_digest)
-
-    def test_sign_prepared_pdf(self):
-        """Test signature of a single file.
-
-        Given I am authenticated
-        When a sign an existing file
-        Then I receive a signature
-        """
+    def test_sign_single_prepared_pdf(self):
+        pdf = PDF(fixture_path('prepared.pdf'), prepared=True)
         with my_vcr.use_cassette('sign_prepared_pdf'):
-            self.instance.sign_pdf(filename=fixture_path('prepared.pdf'))
+            self.instance.sign_one_pdf(pdf)
 
-    def test_wrong_customer_auth_error(self):
-        """Test an AuthenticationFailed."""
+        # TODO find a way to check the signature programmatically
+        # Checked manually with Adobe Acrobat Reader DC for now
+
+    def test_sign_single_unprepared_pdf(self):
+        pdf = PDF(fixture_path('one.pdf'))
+        with my_vcr.use_cassette('sign_unprepared_pdf'):
+            self.instance.sign_one_pdf(pdf)
+        # TODO check the signature
+
+    def test_sign_batch(self):
+        pdfs = [PDF(fixture_path(filename))
+                for filename in ["one.pdf", "two.pdf", "three.pdf"]]
+        with my_vcr.use_cassette('sign_batch'):
+            self.instance.sign_batch(pdfs)
+        from pprint import pprint as pp
+        pp([p.out_filename for p in pdfs])
+
+        # TODO check the signature
+
+    def test_wrong_customer_authentication_failed(self):
         bad_instance = AIS(customer="wrong_name", key_static="wrong_key",
                            cert_file=self.cert_file,
                            cert_key=self.cert_key)

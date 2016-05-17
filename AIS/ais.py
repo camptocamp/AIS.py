@@ -9,17 +9,17 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 
 import base64
 import hashlib
-import sys
+import json
+import re
 import uuid
 
 import requests
-import PyPDF2
 
+from .pdf import PDF
 from . import exceptions
+from . import helpers
 
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
-
-PY3 = sys.version_info[0] == 3
 
 
 class AIS():
@@ -43,40 +43,7 @@ class AIS():
             contents = fp.read()
         h = hashlib.new('sha256', contents)
         result = base64.b64encode(h.digest())
-        if PY3:
-            result = result.decode('ascii')
-        return result
-
-    def pdf_digest(self, filename):
-        reader = PyPDF2.PdfFileReader(filename)
-        sig_obj = None
-
-        for generation, idnums in reader.xref.items():
-            for idnum in idnums:
-                if idnum == 0:
-                    continue
-                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
-                                                        reader).getObject()
-                if (
-                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
-                    pdf_obj.get('/Type') == '/Sig'
-                ):
-                    sig_obj = pdf_obj
-                    continue
-
-        if sig_obj is None:
-            raise exceptions.MissingPreparedSignature
-
-        self.byte_range = sig_obj['/ByteRange']
-
-        h = hashlib.sha256()
-        with open(filename, 'rb') as fp:
-            for start, length in (self.byte_range[:2], self.byte_range[2:]):
-                fp.seek(start)
-                h.update(fp.read(length))
-
-        result = base64.b64encode(h.digest())
-        if PY3:
+        if helpers.PY3:
             result = result.decode('ascii')
         return result
 
@@ -126,9 +93,73 @@ class AIS():
 
         return signature
 
-    def sign_pdf(self, filename):
+    def sign_batch(self, pdfs):
+        """Sign a batch of files."""
+        # prepare pdfs in one batch
+        # payload in batch
+        """Sign a batch of pdf files."""
+        PDF.prepare_batch(pdfs)
+
+        payload_documents = {
+            "DocumentHash" + str(count): {
+                "@ID": count,
+                "dsig.DigestMethod": {
+                    "@Algorithm":
+                    "http://www.w3.org/2001/04/xmlenc#sha256"
+                },
+                "dsig.DigestValue": pdf.digest()
+            }
+            for count, pdf in enumerate(pdfs)
+        }
+
+        payload = {
+            "SignRequest": {
+                "@RequestID": self._request_id(),
+                "@Profile": "http://ais.swisscom.ch/1.0",
+                "OptionalInputs": {
+                    "ClaimedIdentity": {
+                        "Name": ':'.join((self.customer, self.key_static)),
+                    },
+                    "SignatureType": "urn:ietf:rfc:3369",
+                    "AdditionalProfile":
+                    "http://ais.swisscom.ch/1.0/profiles/batchprocessing",
+                    # "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
+                    # "sc.AddRevocationInformation": {"@Type": "BOTH"},
+                },
+                "InputDocuments": payload_documents
+            }
+        }
+
+        payload_json = json.dumps(payload, indent=4)
+        payload_json = re.sub(r'"DocumentHash\d+"', '"DocumentHash"',
+                              payload_json)
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8',
+        }
+        cert = (self.cert_file, self.cert_key)
+        response = requests.post(url, data=payload_json, headers=headers,
+                                 cert=cert)
+        sign_resp = response.json()['SignResponse']
+        result = sign_resp['Result']
+
+        if 'Error' in result['ResultMajor']:
+            raise exceptions.error_for(response)
+
+        other = sign_resp['SignatureObject']['Other']['sc.SignatureObjects']
+        for signature_object in other['sc.ExtendedSignatureObject']:
+            signature = Signature(base64.b64decode(
+                signature_object['Base64Signature']['$']
+            ))
+            which_document = int(signature_object['@WhichDocument'])
+            pdf = pdfs[which_document]
+            with open(pdf.out_filename, "rb+") as fp:
+                fp.seek(pdf.byte_range[1] + 1)
+                fp.write(signature.contents.encode('hex'))
+
+    def sign_one_pdf(self, pdf):
         """Sign the given pdf file."""
-        file_hash = self.pdf_digest(filename)
+        pdf.prepare()
 
         payload = {
             "SignRequest": {
@@ -148,7 +179,7 @@ class AIS():
                             "@Algorithm":
                             "http://www.w3.org/2001/04/xmlenc#sha256"
                         },
-                        "dsig.DigestValue": file_hash
+                        "dsig.DigestValue": pdf.digest()
                     },
                 }
             }
@@ -169,8 +200,8 @@ class AIS():
         signature = Signature(base64.b64decode(
             sign_response['SignatureObject']['Base64Signature']['$']
         ))
-        with open("out.pdf", "rb+") as fp:
-            fp.seek(self.byte_range[1] + 1)
+        with open(pdf.out_filename, "rb+") as fp:
+            fp.seek(pdf.byte_range[1] + 1)
             fp.write(signature.contents.encode('hex'))
 
         return signature
