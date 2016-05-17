@@ -14,4 +14,4 @@ from .exceptions import AISError, AuthenticationFailed
 __all__ = ('login', 'AIS', 'PDF', 'Signature', 'AISError',
            'AuthenticationFailed')
 
-__version__ = '0.1.0a1'
+__version__ = '0.1.0'
