@@ -22,7 +22,7 @@ setup(
     description=("Python interface for the Swisscom All-in Signing Service"),
     long_description=readme + '\n\n' + history,
     license='GNU Affero General Public License v3 or later (AGPLv3+)',
-    author="Camptocamp SA",
+    author="Camptocamp",
     author_email="info@camptocamp.com",
     url="https://pypi.python.org/pypi/AIS.py",
     packages=['AIS'],
