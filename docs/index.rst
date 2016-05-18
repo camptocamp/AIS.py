@@ -3,8 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to AIS.py's documentation!
-==================================
+AIS.py
+======
+
+AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
+
+Release v\ |version|.
 
 Contents:
 
