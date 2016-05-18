@@ -6,8 +6,6 @@ AIS.py
 
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
-This is **work in progress**! Nothing useful for now.
-
 AIS is a managed service to provide legally valid electronic signatures.
 
 License
