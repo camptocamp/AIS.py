@@ -21,11 +21,20 @@ from . import helpers
 
 
 class PDF():
+    """A container for a PDF file to be signed and the signed version."""
+
     def __init__(self, in_filename, prepared=False):
         self.in_filename = in_filename
-        self.out_fp, self.out_filename = tempfile.mkstemp(suffix=".pdf")
+        """Filename of the PDF to be treated."""
+
+        _out_fp, _out_filename = tempfile.mkstemp(suffix=".pdf")
+        self.out_filename = _out_filename
+        """Filename of the output, signed PDF."""
+
         shutil.copy(self.in_filename, self.out_filename)
+
         self.prepared = prepared
+        """Is the PDF prepared with an empty signature?"""
 
     @staticmethod
     def _java_command():
