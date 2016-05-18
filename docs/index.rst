@@ -15,11 +15,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-The API Documentation / Guide
------------------------------
+API Reference
+-------------
 
-If you are looking for information on a specific function, class, or method,
-this part of the documentation is for you.
+This section describes all classes, methods and exceptions.
 
 .. toctree::
    :maxdepth: 2

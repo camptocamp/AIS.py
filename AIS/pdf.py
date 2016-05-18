@@ -48,7 +48,7 @@ class PDF(object):
 
     @classmethod
     def prepare_batch(cls, pdfs):
-        """Add an empty signature to each of pdfs with only one java call.."""
+        """Add an empty signature to each of pdfs with only one java call."""
         pdfs_to_prepare = filter(lambda p: not p.prepared, pdfs)
         subprocess.check_call(
             cls._java_command() +
