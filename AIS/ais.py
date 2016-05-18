@@ -22,7 +22,7 @@ from . import helpers
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
 
 
-class AIS():
+class AIS(object):
     """Client object holding connection information to the AIS service."""
 
     def __init__(self, customer, key_static, cert_file, cert_key):
@@ -207,7 +207,7 @@ class AIS():
         return signature
 
 
-class Signature():
+class Signature(object):
     """A cryptographic signature returned from the AIS webservice."""
 
     def __init__(self, contents):

@@ -20,7 +20,7 @@ from . import exceptions
 from . import helpers
 
 
-class PDF():
+class PDF(object):
     """A container for a PDF file to be signed and the signed version."""
 
     def __init__(self, in_filename, prepared=False):
