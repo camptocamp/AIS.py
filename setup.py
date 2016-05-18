@@ -24,7 +24,7 @@ setup(
     license='GNU Affero General Public License v3 or later (AGPLv3+)',
     author="Camptocamp SA",
     author_email="info@camptocamp.com",
-    url="www.camptocamp.com",
+    url="https://pypi.python.org/pypi/AIS.py",
     packages=['AIS'],
     install_requires=["requests >= 2.0",
                       "PyPDF2"],
