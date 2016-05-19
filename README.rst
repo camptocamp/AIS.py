@@ -25,8 +25,6 @@ For more information, check out the `Documentation`_.
 
 .. _Documentation: http://aispy.readthedocs.io
 
-.. include:: AUTHORS.rst
-
 License
 -------
 
