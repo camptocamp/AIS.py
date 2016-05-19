@@ -120,6 +120,8 @@ This section describes classes and exceptions.
 
 .. include:: ../HISTORY.rst
 
+.. include:: ../AUTHORS.rst
+
 License
 -------
 
