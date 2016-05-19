@@ -4,9 +4,15 @@ AIS.py
 .. image:: https://travis-ci.org/camptocamp/AIS.py.svg?branch=master
     :target: https://travis-ci.org/camptocamp/AIS.py
 
+.. image:: https://readthedocs.org/projects/aispy/badge/?version=latest
+:target: http://aispy.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
-AIS is a managed service to provide legally valid electronic signatures.
+`Documentation`_.
+
+:: _`Documentation`: http://aispy.readthedocs.io/
 
 License
 -------
