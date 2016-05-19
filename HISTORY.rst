@@ -6,6 +6,9 @@ Release History
 0.2 (unreleased)
 ++++++++++++++++
 
+**Documentation**
+- Added sections for introduction, installation, testing, project status, API
+  reference.
 
 0.1 (2016-05-17)
 ++++++++++++++++
