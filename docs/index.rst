@@ -94,6 +94,20 @@ If you prefer to do this manually for one Python version::
 Status
 ------
 
+AIS.py is already functional for its main use case, but a few things could be
+improved:
+
+- Allow to request only a trusted timestamp instead of a signature.
+- Allow to choose a different digest algorithm than SHA256.
+- Handle second factor authentication in addition to static certificates.
+- Implement in Python the generation of an empty signature instead of calling
+  iText through a Java wrapper. Later handling of PDF files is already in
+  Python thanks to the PyPDF2 library that gives a somewhat low level access.
+- Fix a few problems with vcrpy that prevent tests from running in Python 3.
+- Find a way to check PDF signatures programmatically in the tests.
+- Document all parameters and return values in the docstrings (i.e. improve
+  the API reference).
+
 API Reference
 -------------
 
