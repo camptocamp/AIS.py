@@ -19,4 +19,4 @@ __all__ = ('AIS', 'Signature', 'PDF', 'AISError',
            'AuthenticationFailed', 'UnknownAISError',
            'MissingPreparedSignature')
 
-__version__ = '0.2.0dev0'
+__version__ = '0.2.0'
