@@ -10,7 +10,9 @@ AIS.py
 
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
-AIS.py works like this::
+AIS.py works like this:
+
+.. code-block:: python
 
     >>> from AIS import AIS, PDF
     >>> client = AIS.AIS('alice', 'a_secret', 'a.crt', 'a.key')
