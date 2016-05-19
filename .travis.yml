@@ -6,6 +6,7 @@ env:
   - TOXENV=py27
   - TOXENV=pypy
   - TOXENV=lint
+  - TOXENV=readme
 
 before_script:
   - pip install tox
