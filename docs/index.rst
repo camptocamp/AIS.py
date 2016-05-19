@@ -118,6 +118,8 @@ This section describes classes and exceptions.
 
    api
 
+.. include:: ../HISTORY.rst
+
 Indices and tables
 ==================
 
