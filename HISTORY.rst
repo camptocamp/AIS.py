@@ -7,6 +7,7 @@ Release History
 ++++++++++++++++
 
 **Documentation**
+
 - Added sections for introduction, installation, testing, project status, API
   reference.
 
