@@ -15,7 +15,7 @@ AIS.py works like this:
 .. code-block:: python
 
     >>> from AIS import AIS, PDF
-    >>> client = AIS.AIS('alice', 'a_secret', 'a.crt', 'a.key')
+    >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
     >>> pdf = PDF('source.pdf')
     >>> client.sign_one_pdf(pdf)
     >>> print(pdf.out_filename)
