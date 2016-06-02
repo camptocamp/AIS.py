@@ -8,6 +8,7 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 """
 
 import base64
+import codecs
 import hashlib
 import shutil
 import subprocess
@@ -99,3 +100,12 @@ class PDF(object):
             result = result.decode('ascii')
 
         return result
+
+    def write_signature(self, signature):
+        """ Write the signature in the pdf file
+
+        :type signature: Signature
+        """
+        with open(self.out_filename, "rb+") as fp:
+            fp.seek(self.byte_range[1] + 1)
+            fp.write(codecs.encode(signature.contents, 'hex'))

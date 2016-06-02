@@ -3,16 +3,10 @@
     "interactions": [
         {
             "request": {
-                "body": "{\"SignRequest\": {\"InputDocuments\": {\"DocumentHash\": {\"dsig.DigestMethod\": {\"@Algorithm\": \"http://www.w3.org/2001/04/xmlenc#sha256\"}, \"dsig.DigestValue\": \"PYzPbdsBsaC/7tib6AadhzU1uTvl0klKzh8NG8F1EQg=\"}}, \"OptionalInputs\": {\"sc.AddRevocationInformation\": {\"@Type\": \"BOTH\"}, \"SignatureType\": \"urn:ietf:rfc:3369\", \"ClaimedIdentity\": {\"Name\": \"X:Y\"}, \"AddTimestamp\": {\"@Type\": \"urn:ietf:rfc:3161\"}}, \"@RequestID\": \"43687a5a414943a0951739df8f6147fa\", \"@Profile\": \"http://ais.swisscom.ch/1.0\"}}", 
+                "body": "{\"SignRequest\": {\"InputDocuments\": {\"DocumentHash\": {\"dsig.DigestMethod\": {\"@Algorithm\": \"http://www.w3.org/2001/04/xmlenc#sha256\"}, \"dsig.DigestValue\": \"9ebjDuUxyzsAKM9TPCYJTdI/La6WjXEIsbkAKMXThkM=\"}}, \"OptionalInputs\": {\"sc.AddRevocationInformation\": {\"@Type\": \"BOTH\"}, \"SignatureType\": \"urn:ietf:rfc:3369\", \"ClaimedIdentity\": {\"Name\": \"X:Y\"}, \"AddTimestamp\": {\"@Type\": \"urn:ietf:rfc:3161\"}}, \"@RequestID\": \"f67f38449d314d5a8868734cb50c37fc\", \"@Profile\": \"http://ais.swisscom.ch/1.0\"}}", 
                 "headers": {
-                    "Content-Length": [
-                        "504"
-                    ], 
-                    "Accept-Encoding": [
-                        "gzip, deflate"
-                    ], 
-                    "Accept": [
-                        "application/json"
+                    "Content-Type": [
+                        "application/json;charset=UTF-8"
                     ], 
                     "User-Agent": [
                         "python-requests/2.10.0"
@@ -20,8 +14,14 @@
                     "Connection": [
                         "keep-alive"
                     ], 
-                    "Content-Type": [
-                        "application/json;charset=UTF-8"
+                    "Accept-Encoding": [
+                        "gzip, deflate"
+                    ], 
+                    "Accept": [
+                        "application/json"
+                    ], 
+                    "Content-Length": [
+                        "504"
                     ]
                 }, 
                 "method": "POST", 
@@ -33,30 +33,30 @@
                     "code": 200
                 }, 
                 "headers": {
-                    "set-cookie": [
-                        "AL_BALANCE=$xc/aP2TycEd!Woz!o2tHKCoZOBBog8wuoMxt7fvIkThfCTOsv4_; Path=/"
-                    ], 
-                    "keep-alive": [
-                        "timeout=10, max=500"
-                    ], 
-                    "server": [
-                        "Apache"
-                    ], 
-                    "connection": [
-                        "Keep-Alive"
-                    ], 
                     "date": [
-                        "Tue, 10 May 2016 15:56:10 GMT"
+                        "Thu, 02 Jun 2016 13:17:45 GMT"
                     ], 
                     "x-frame-options": [
                         "SAMEORIGIN"
                     ], 
                     "content-type": [
                         "application/json"
+                    ], 
+                    "keep-alive": [
+                        "timeout=10, max=500"
+                    ], 
+                    "connection": [
+                        "Keep-Alive"
+                    ], 
+                    "set-cookie": [
+                        "AL_BALANCE=$xc/q259YP6zfJJ34TzVKDrgUvSOoQLsZIIEI9r9jzag21RPcv8e; Path=/"
+                    ], 
+                    "server": [
+                        "Apache"
                     ]
                 }, 
                 "body": {
-                    "string": "{\"SignResponse\":{\"@RequestID\":\"43687a5a414943a0951739df8f6147fa\",\"@Profile\":\"http:\\/\\/ais.swisscom.ch\\/1.0\",\"Result\":{\"ResultMajor\":\"urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError\",\"ResultMinor\":\"http:\\/\\/ais.swisscom.ch\\/1.0\\/resultminor\\/AuthenticationFailed\",\"ResultMessage\":{\"@xml.lang\":\"en\",\"$\":\"Either ClaimedIdentity or SSL certificate check failed\"}}}}"
+                    "string": "{\"SignResponse\":{\"@RequestID\":\"f67f38449d314d5a8868734cb50c37fc\",\"@Profile\":\"http:\\/\\/ais.swisscom.ch\\/1.0\",\"Result\":{\"ResultMajor\":\"urn:oasis:names:tc:dss:1.0:resultmajor:RequesterError\",\"ResultMinor\":\"http:\\/\\/ais.swisscom.ch\\/1.0\\/resultminor\\/AuthenticationFailed\",\"ResultMessage\":{\"@xml.lang\":\"en\",\"$\":\"Either ClaimedIdentity or SSL certificate check failed\"}}}}"
                 }
             }
         }

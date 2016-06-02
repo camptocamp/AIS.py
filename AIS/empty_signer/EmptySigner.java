@@ -12,8 +12,6 @@ public class EmptySigner {
 
   public static void main(String[] args) throws IOException, DocumentException {
 
-    System.err.println("This is EmptySigner, an itext wrapper, part of AIS.py.");
-
     for (String filename : args) {
       PdfReader reader = new PdfReader(filename);
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
