@@ -123,8 +123,8 @@ class AIS(object):
                     "SignatureType": "urn:ietf:rfc:3369",
                     "AdditionalProfile":
                     "http://ais.swisscom.ch/1.0/profiles/batchprocessing",
-                    # "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
-                    # "sc.AddRevocationInformation": {"@Type": "BOTH"},
+                    "AddTimestamp": {"@Type": "urn:ietf:rfc:3161"},
+                    "sc.AddRevocationInformation": {"@Type": "BOTH"},
                 },
                 "InputDocuments": payload_documents
             }
