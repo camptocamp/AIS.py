@@ -6,6 +6,7 @@ Release History
 0.2.1 (2016-06-08)
 ++++++++++++++++++
 
+- Return in batch mode timestamp and revocation information with the signature.
 - Fix python3 bugs.
 - Refactoring.
 
