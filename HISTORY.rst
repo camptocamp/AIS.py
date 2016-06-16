@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-0.2.1 (2016-06-08)
+0.2.1 (2016-06-16)
 ++++++++++++++++++
 
 - Return in batch mode timestamp and revocation information with the signature.
