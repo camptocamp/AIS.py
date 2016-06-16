@@ -10,7 +10,7 @@ from os import environ
 
 from common import my_vcr, fixture_path, BaseCase
 
-from AIS import AIS, Signature, AuthenticationFailed, PDF
+from AIS import AIS, AuthenticationFailed, PDF
 
 
 class TestAIS(BaseCase):
@@ -20,14 +20,6 @@ class TestAIS(BaseCase):
                              cert_file='alice.crt', cert_key='alice.key')
         self.assertEqual('alice', alice_instance.customer)
         self.assertEqual('alice_secret', alice_instance.key_static)
-
-    def test_sign_filename_returns_signature(self):
-        with my_vcr.use_cassette('sign_one') as cassette:
-            result = self.instance.sign(filename=fixture_path('one.pdf'))
-
-        self.assertEqual(1, len(cassette))
-        self.assertIsInstance(result, Signature)
-        self.assertIsInstance(result.contents, bytes)
 
     def test_sign_single_prepared_pdf(self):
         pdf = PDF(fixture_path('prepared.pdf'), prepared=True)
@@ -60,7 +52,7 @@ class TestAIS(BaseCase):
 
         with self.assertRaises(AuthenticationFailed):
             with my_vcr.use_cassette('wrong_customer'):
-                bad_instance.sign(filename=fixture_path('one.pdf'))
+                bad_instance.sign_one_pdf(PDF(fixture_path('one.pdf')))
 
     def setUp(self):
         """Setup an AIS instance to be used in the tests.
