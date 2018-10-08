@@ -31,10 +31,11 @@ class AIS(object):
         self.cert_key = cert_key
 
         self.byte_range = None
+        self.last_request_id = None
 
-    @staticmethod
-    def _request_id():
-        return uuid.uuid4().hex
+    def _request_id(self):
+        request_id = self.last_request_id = uuid.uuid4().hex
+        return request_id
 
     def post(self, payload):
         """ Do the post request for this payload and return the signature part
