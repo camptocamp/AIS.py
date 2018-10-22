@@ -3,6 +3,13 @@
 Release History
 ---------------
 
+0.2.2 (2018-10-22)
+++++++++++++++++++
+
+- Store the last created request_id on the AIS instance
+- Use a proper test matrix on Travis to test various Python releases
+- Add Python 3.6 to test matrix
+
 0.2.1 (2016-06-16)
 ++++++++++++++++++
 
