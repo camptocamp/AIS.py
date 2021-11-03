@@ -27,7 +27,7 @@ setup(
     url="https://pypi.python.org/pypi/AIS.py",
     packages=['AIS'],
     install_requires=["requests >= 2.0",
-                      "PyPDF2"],
+                      "pyHanko >= 0.9.0"],
     include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',
@@ -35,11 +35,10 @@ setup(
         'License :: OSI Approved :: '
         'GNU Affero General Public License v3 or later (AGPLv3+)',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],

@@ -21,18 +21,6 @@ class TestAIS(BaseCase):
         self.assertEqual('alice', alice_instance.customer)
         self.assertEqual('alice_secret', alice_instance.key_static)
 
-    def test_sign_single_prepared_pdf(self):
-        self.assertIsNone(self.instance.last_request_id)
-
-        pdf = PDF(fixture_path('prepared.pdf'), prepared=True)
-        with my_vcr.use_cassette('sign_prepared_pdf'):
-            self.instance.sign_one_pdf(pdf)
-
-        self.assertIsNotNone(self.instance.last_request_id)
-
-        # TODO find a way to check the signature programmatically
-        # Checked manually with Adobe Acrobat Reader DC for now
-
     def test_sign_single_unprepared_pdf(self):
         self.assertIsNone(self.instance.last_request_id)
 
@@ -51,8 +39,6 @@ class TestAIS(BaseCase):
                 for filename in ["one.pdf", "two.pdf", "three.pdf"]]
         with my_vcr.use_cassette('sign_batch'):
             self.instance.sign_batch(pdfs)
-        from pprint import pprint as pp
-        pp([p.out_filename for p in pdfs])
 
         self.assertIsNotNone(self.instance.last_request_id)
 

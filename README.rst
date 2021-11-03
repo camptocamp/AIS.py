@@ -17,9 +17,10 @@ AIS.py works like this:
     >>> from AIS import AIS, PDF
     >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
     >>> pdf = PDF('source.pdf')
-    >>> client.sign_one_pdf(pdf)
-    >>> print(pdf.out_filename)
-    /tmp/.../T/tmpexkdrlkm.pdf
+    >>> with open('target.pdf', 'wb') as fp:
+    ...     fp.write(pdf.out_stream.getbuffer())
+    ... 
+    122496
 
 For more information, check out the `Documentation`_.
 

@@ -8,104 +8,74 @@ AIS.py - A Python interface for the Swisscom All-in Signing Service.
 """
 
 import base64
-import codecs
-import hashlib
-import shutil
-import subprocess
-import tempfile
+from datetime import datetime
+import io
 
-import PyPDF2
-from pkg_resources import resource_filename
-
-from . import exceptions
-from . import helpers
+from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
+from pyhanko.sign import fields
+from pyhanko.sign import signers
+from pyhanko.sign.signers import cms_embedder
 
 
 class PDF(object):
     """A container for a PDF file to be signed and the signed version."""
 
-    def __init__(self, in_filename, prepared=False):
-        self.in_filename = in_filename
-        """Filename of the PDF to be treated."""
+    def __init__(self, input_file):
+        """Accepts either a filename or file-like object"""
 
-        _out_fp, _out_filename = tempfile.mkstemp(suffix=".pdf")
-        self.out_filename = _out_filename
-        """Filename of the output, signed PDF."""
+        if isinstance(input_file, str):
+            with open(input_file, 'rb') as fp:
+                self.in_stream = io.BytesIO(fp.read())
+        else:
+            self.in_stream = input_file
 
-        shutil.copy(self.in_filename, self.out_filename)
-
-        self.prepared = prepared
-        """Is the PDF prepared with an empty signature?"""
-
-    @staticmethod
-    def _java_command():
-        java_dir = resource_filename(__name__, 'empty_signer')
-        return [
-            'java',
-            '-cp', '.:vendor/itextpdf-5.5.9.jar',
-            '-Duser.dir={}'.format(java_dir),
-            'EmptySigner',
-        ]
-
-    @classmethod
-    def prepare_batch(cls, pdfs):
-        """Add an empty signature to each of pdfs with only one java call."""
-        pdfs_to_prepare = filter(lambda p: not p.prepared, pdfs)
-        subprocess.check_call(
-            cls._java_command() +
-            [pdf.out_filename for pdf in pdfs_to_prepare]
+        writer = IncrementalPdfFileWriter(self.in_stream)
+        self.cms_writer = cms_embedder.PdfCMSEmbedder().write_cms(
+            field_name='Signature',
+            writer=writer
         )
-        for pdf in pdfs_to_prepare:
-            pdf.prepared = True
+        """CMS Writer used for embedding the signature"""
+        next(self.cms_writer)
+
+        self.out_stream = None
+        """Output stream for the signed PDF, is only valid after digest"""
+
+        self.sig_obj = None
+        """Signature object used by pyHanko"""
 
     def prepare(self):
         """Add an empty signature to self.out_filename."""
-        if not self.prepared:
-            subprocess.check_call(
-                self._java_command() + [self.out_filename],
-            )
-            self.prepared = True
+        self.sig_obj = signers.SignatureObject(
+            timestamp=datetime.now(),
+            bytes_reserved=64*1024,  # 64KiB
+        )
 
     def digest(self):
-        reader = PyPDF2.PdfFileReader(self.out_filename)
-        sig_obj = None
+        self.cms_writer.send(
+            cms_embedder.SigObjSetup(
+                sig_placeholder=self.sig_obj,
+                mdp_setup=cms_embedder.SigMDPSetup(
+                    md_algorithm='sha256',
+                    certify=True,
+                    docmdp_perms=fields.MDPPerm.NO_CHANGES,
+                )
+            )
+        )
+        digest, self.out_stream = self.cms_writer.send(
+            cms_embedder.SigIOSetup(md_algorithm='sha256', in_place=True)
+        )
 
-        for generation, idnums in reader.xref.items():
-            for idnum in idnums:
-                if idnum == 0:
-                    break
-                pdf_obj = PyPDF2.generic.IndirectObject(idnum, generation,
-                                                        reader).getObject()
-                if (
-                    isinstance(pdf_obj, PyPDF2.generic.DictionaryObject) and
-                    pdf_obj.get('/Type') == '/Sig'
-                ):
-                    sig_obj = pdf_obj
-                    break
+        result = base64.b64encode(digest.document_digest)
 
-        if sig_obj is None:
-            raise exceptions.MissingPreparedSignature
-
-        self.byte_range = sig_obj['/ByteRange']
-
-        h = hashlib.sha256()
-        with open(self.out_filename, 'rb') as fp:
-            for start, length in (self.byte_range[:2], self.byte_range[2:]):
-                fp.seek(start)
-                h.update(fp.read(length))
-
-        result = base64.b64encode(h.digest())
-
-        if helpers.PY3:
-            result = result.decode('ascii')
-
-        return result
+        return result.decode('ascii')
 
     def write_signature(self, signature):
         """ Write the signature in the pdf file
 
         :type signature: Signature
         """
-        with open(self.out_filename, "rb+") as fp:
-            fp.seek(self.byte_range[1] + 1)
-            fp.write(codecs.encode(signature.contents, 'hex'))
+        self.cms_writer.send(signature.contents)
+
+    def __del__(self):
+        if hasattr(self.in_stream, 'close'):
+            self.in_stream.close()

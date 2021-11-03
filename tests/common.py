@@ -13,8 +13,6 @@ import unittest
 from vcr import VCR
 from vcr.serializers import jsonserializer
 
-from AIS import helpers
-
 
 class JSONSerializer(object):
     """ Override default json serializer to fix PY3 vcr encoding mistake.
@@ -58,9 +56,7 @@ def before_record_callback(request):
 
     - customer:key are replaced with 'X:Y'
     """
-    body = request.body
-    if helpers.PY3:
-        body = request.body.decode('utf-8')
+    body = request.body.decode('utf-8')
 
     payload = json.loads(body)
     payload['SignRequest']['OptionalInputs']['ClaimedIdentity']['Name'] = 'X:Y'
@@ -76,8 +72,7 @@ my_vcr = VCR(
     before_record=before_record_callback
 )
 
-if helpers.PY3:
-    my_vcr.register_serializer('json', JSONSerializer)
+my_vcr.register_serializer('json', JSONSerializer)
 
 
 def fixture_path(filename):

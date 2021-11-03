@@ -13,12 +13,6 @@ from AIS import PDF
 
 class TestPDF(BaseCase):
 
-    def test_get_digest_of_prepared_file(self):
-        pdf = PDF(fixture_path('prepared.pdf'), prepared=True)
-
-        with open(fixture_path('expected_digest')) as fp:
-            self.assertEqual(fp.read().strip(), pdf.digest())
-
     def test_prepare_then_get_digest(self):
         pdf = PDF(fixture_path('one.pdf'))
 

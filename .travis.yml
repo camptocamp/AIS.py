@@ -3,31 +3,31 @@ language: python
 matrix:
   include:
     - language: python
+      python: "3.8"
+      env: TOXENV=py38
+
+    - language: python
+      python: "3.9"
+      env: TOXENV=py39
+
+    - language: python
+      python: "3.7"
+      env: TOXENV=py37
+
+    - language: python
       python: "3.6"
       env: TOXENV=py36
-
-    - language: python
-      python: "3.5"
-      env: TOXENV=py35
-
-    - language: python
-      python: "3.4"
-      env: TOXENV=py34
-
-    - language: python
-      python: "2.7"
-      env: TOXENV=py27
 
     - language: python
       python: "pypy"
       env: TOXENV=pypy
 
     - language: python
-      python: "3.5"
+      python: "3.8"
       env: TOXENV=lint
 
     - language: python
-      python: "3.5"
+      python: "3.8"
       env: TOXENV=readme
 
 before_script:

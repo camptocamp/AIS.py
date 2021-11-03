@@ -12,11 +12,9 @@ from .exceptions import (
     AISError,
     AuthenticationFailed,
     UnknownAISError,
-    MissingPreparedSignature,
 )
 
 __all__ = ('AIS', 'Signature', 'PDF', 'AISError',
-           'AuthenticationFailed', 'UnknownAISError',
-           'MissingPreparedSignature')
+           'AuthenticationFailed', 'UnknownAISError')
 
 __version__ = '0.2.2'

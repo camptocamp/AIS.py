@@ -14,7 +14,6 @@ import uuid
 
 import requests
 
-from .pdf import PDF
 from . import exceptions
 
 url = "https://ais.swisscom.com/AIS-Server/rs/v1.0/sign"
@@ -63,10 +62,10 @@ class AIS(object):
 
         :type pdfs: list(PDF)
         """
-        # prepare pdfs in one batch
         # payload in batch
 
-        PDF.prepare_batch(pdfs)
+        for pdf in pdfs:
+            pdf.prepare()
 
         payload_documents = {
             "DocumentHash" + str(count): {
