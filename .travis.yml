@@ -15,10 +15,6 @@ matrix:
       env: TOXENV=py37
 
     - language: python
-      python: "3.6"
-      env: TOXENV=py36
-
-    - language: python
       python: "pypy"
       env: TOXENV=pypy
 
