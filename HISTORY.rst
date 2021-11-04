@@ -3,6 +3,13 @@
 Release History
 ---------------
 
+0.3.0-beta (2021-11-04)
+++++++++++++++++++
+
+- Remove Python 2.7, 3.4, 3.5, 3.6 support
+- Replace PyPDF2 and itext with pyHanko
+- Remove support for signing prepared PDFs
+
 0.2.2 (2018-10-22)
 ++++++++++++++++++
 

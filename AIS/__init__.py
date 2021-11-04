@@ -17,4 +17,4 @@ from .exceptions import (
 __all__ = ('AIS', 'Signature', 'PDF', 'AISError',
            'AuthenticationFailed', 'UnknownAISError')
 
-__version__ = '0.2.2'
+__version__ = '0.3.0-beta'
