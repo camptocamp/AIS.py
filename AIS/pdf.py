@@ -75,7 +75,3 @@ class PDF(object):
         :type signature: Signature
         """
         self.cms_writer.send(signature.contents)
-
-    def __del__(self):
-        if hasattr(self.in_stream, 'close'):
-            self.in_stream.close()
