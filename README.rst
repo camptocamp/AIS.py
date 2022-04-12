@@ -1,5 +1,5 @@
 AIS2.py
-======
+=======
 
 .. image:: https://img.shields.io/pypi/v/AIS2.py.svg
     :target: https://pypi.org/project/AIS2.py
