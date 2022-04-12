@@ -17,20 +17,22 @@ with open('HISTORY.rst', 'r', 'utf-8') as f:
     history = f.read()
 
 setup(
-    name="AIS.py",
+    name="AIS2.py",
     version=version,
     description=("Python interface for the Swisscom All-in Signing Service"),
     long_description=readme + '\n\n' + history,
     license='GNU Affero General Public License v3 or later (AGPLv3+)',
     author="Camptocamp",
     author_email="info@camptocamp.com",
-    url="https://pypi.python.org/pypi/AIS.py",
+    maintainer="Seantis GmbH",
+    maintainer_email="info@seantis.ch",
+    url="https://pypi.python.org/pypi/AIS2.py",
     packages=['AIS'],
     install_requires=["requests >= 2.0",
                       "pyHanko >= 0.9.0"],
     include_package_data=True,
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved',
         'License :: OSI Approved :: '
         'GNU Affero General Public License v3 or later (AGPLv3+)',
@@ -39,6 +41,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
