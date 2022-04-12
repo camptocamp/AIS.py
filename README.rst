@@ -1,30 +1,37 @@
-AIS.py
+AIS2.py
 ======
 
-.. image:: https://travis-ci.org/camptocamp/AIS.py.svg?branch=master
-    :target: https://travis-ci.org/camptocamp/AIS.py
+.. image:: https://img.shields.io/pypi/v/AIS2.py.svg
+    :target: https://pypi.org/project/AIS2.py
+    :alt: PyPI version
 
-.. image:: https://readthedocs.org/projects/aispy/badge/?version=latest
-    :target: http://aispy.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+.. image:: https://img.shields.io/pypi/pyversions/AIS2.py.svg
+    :target: https://pypi.org/project/AIS2.py
+    :alt: Python versions
+
+.. image:: https://github.com/seantis/AIS2.py/actions/workflows/python-tox.yaml/badge.svg
+    :target: https://github.com/seantis/AIS2.py/actions
+    :alt: Tests
+
+.. image:: https://codecov.io/gh/seantis/AIS2.py/branch/master/graph/badge.svg?token=CwujQmq61X
+    :target: https://codecov.io/gh/seantis/AIS2.py
+    :alt: Codecov.io
 
 AIS.py: a Python interface for the Swisscom All-in Signing Service (aka AIS).
 
-AIS.py works like this:
+AIS2.py is a fork created to get rid of the licensing woes affected itext dependency and replace it with pyHanko. Furthermore the API was slightly adjusted to be more flexible, so buffers can be passed around rather than files that need to exist on the filesystem.
+
+AIS2.py works like this:
 
 .. code-block:: python
 
     >>> from AIS import AIS, PDF
     >>> client = AIS('alice', 'a_secret', 'a.crt', 'a.key')
-    >>> pdf = PDF('source.pdf')
-    >>> with open('target.pdf', 'wb') as fp:
-    ...     fp.write(pdf.out_stream.getbuffer())
+    >>> with open('source.pdf', 'rb') as fp:
+    ...     pdf = PDF(fp)
+    ...     with open('target.pdf', 'wb') as fp:
+    ...         fp.write(pdf.out_stream.getbuffer())
     ... 
-    122496
-
-For more information, check out the `Documentation`_.
-
-.. _Documentation: http://aispy.readthedocs.io
 
 License
 -------
