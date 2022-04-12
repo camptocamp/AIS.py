@@ -13,7 +13,7 @@ AIS2.py
     :target: https://github.com/seantis/AIS2.py/actions
     :alt: Tests
 
-.. image:: https://codecov.io/gh/seantis/AIS2.py/branch/master/graph/badge.svg?token=CwujQmq61X
+.. image:: https://codecov.io/gh/seantis/AIS2.py/branch/master/graph/badge.svg?token=NRPFO5L0PG
     :target: https://codecov.io/gh/seantis/AIS2.py
     :alt: Codecov.io
 

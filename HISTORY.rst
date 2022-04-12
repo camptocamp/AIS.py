@@ -3,6 +3,12 @@
 Release History
 ---------------
 
+2.0.0 (2022-04-12)
+++++++++++++++++++
+
+- Creation of AIS2.py fork
+- Replaced Travis CI with GitHub Actions.
+
 0.3.0-beta (2021-11-04)
 ++++++++++++++++++
 
